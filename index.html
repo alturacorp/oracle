@@ -395,10 +395,41 @@ async function runQuery() {
     if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
 
     const text = (data.choices?.[0]?.message?.content || '').trim();
-    if (!text) throw new Error('Empty response from engine');
+if (!text) throw new Error('Empty response from engine');
 
-    const s = text.indexOf('{'), e = text.lastIndexOf('}');
-    if (s === -1 || e === -1) throw new Error('No JSON in response');
+// Check for critical system alert before attempting JSON parse
+if (text.startsWith('ORACLE SYSTEM ALERT')) {
+  thinking.remove();
+  appendMsg(`
+    <div class="msg">
+      <div class="msg-row">
+        <div class="msg-tag" style="color:var(--crit);letter-spacing:.14em">system</div>
+        <div class="msg-body">
+          <div style="
+            border:1px solid rgba(232,122,122,.3);
+            border-left:3px solid var(--crit);
+            background:rgba(232,122,122,.04);
+            padding:14px 16px;
+          ">
+            <div style="font-size:9px;letter-spacing:.22em;color:var(--crit);margin-bottom:8px">
+              ORACLE — CRITICAL SYSTEM ALERT
+            </div>
+            <div style="font-size:12px;color:rgba(232,122,122,.7);line-height:1.7;letter-spacing:.04em">
+              ${text.replace(/</g,'&lt;')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`);
+  isProcessing = false;
+  document.getElementById('submit-btn').disabled = false;
+  document.getElementById('status-lbl').textContent = 'ready';
+  return;
+}
+
+// Normal JSON parse continues below
+const s = text.indexOf('{'), e = text.lastIndexOf('}');
+if (s === -1 || e === -1) throw new Error('No JSON in response');
 
     const r = JSON.parse(text.slice(s, e + 1));
     thinking.remove();
