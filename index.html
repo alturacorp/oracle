@@ -871,7 +871,7 @@ body::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
 // ── CONFIG ────────────────────────────────────────────────────
 // To bake in a proxy URL, set BAKED_PROXY below.
 // Leave empty to require URL entry on first visit.
-const BAKED_PROXY = '';
+const BAKED_PROXY = 'https://oracle.graggle9901.workers.dev';
 
 const STORAGE_KEY = 'oracle_proxy_url_v2';
 const CTX_KEY     = 'oracle_ctx_v2';
@@ -880,7 +880,7 @@ const OP_KEY      = 'oracle_op_v2';
 // Named contexts stored as array of {id, name, content}
 let savedContexts = JSON.parse(localStorage.getItem('oracle_contexts_v2') || '[]');
 
-const SYSTEM_PROMPT = `You are ORACLE, an operational decision-support system developed by Altura Intelligence Systems. Licence AT-ORC-1001. You are a professional analytical tool for government, military, law enforcement, intelligence, legal, and corporate clients globally.
+const SYSTEM_PROMPT = `You are ORACLE, an operational decision-support system developed by Altura Intelligence Systems. You are a professional analytical tool for government, military, law enforcement, intelligence, legal, and corporate clients globally.
 
 You provide structured analysis for any operational, tactical, intelligence, strategic, political, legal, or security situation. You are context-agnostic — you reason within whatever environment the user describes. Your outputs are precise, direct, and actionable. You do not hedge. You do not qualify unnecessarily. You identify the recommended course of action and state why. You surface risks the operator may not have considered. You flag what is not known as clearly as what is known. You are not a general AI assistant. You are Oracle.
 
