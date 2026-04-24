@@ -2,8 +2,6 @@
 
 Operational Reasoning & Command Logic Engine. A decision-support tool for tactical, strategic, intelligence, political, legal, and security analysis.
 
-Built with Llama 3.3 70B via Groq, proxied through a Cloudflare Worker so your API key never touches the client.
-
 ---
 
 ## Setup
