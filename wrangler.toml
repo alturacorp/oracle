@@ -1,0 +1,16 @@
+name = "oracle"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+MODEL = "openai/gpt-oss-120b"
+ALLOWED_ORIGINS = "*"        # lock down, e.g. "https://alturacorp.github.io"
+MAX_TOKENS = "3000"
+RATE_LIMIT_RPM = "10"
+
+# Optional: per-IP rate limiting. Create with: wrangler kv namespace create ORACLE_KV
+# [[kv_namespaces]]
+# binding = "ORACLE_KV"
+# id = "<your-kv-id>"
+
+# Secret (never put in this file):  wrangler secret put GROQ_API_KEY

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Oracle · Altura Intelligence Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100,400;112,600;125,800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;
+  --paper:#08090a; --sheet:#101113; --ink:#ecebe8; --ink2:#85888f; --rule:#25272b; --grease:#ff5a1f; --amber:#e8a93a; --sea:#4fd1d6; --ok:#4fd1d6;
+  --ui:'Archivo','Helvetica Neue',Arial,sans-serif; --serif:'Archivo','Helvetica Neue',Arial,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;border-radius:0}
+html,body{height:100%}
+body{background:var(--paper);color:var(--ink);font:14px/1.5 var(--ui);overflow:hidden}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:1px solid var(--grease);outline-offset:2px}
+.app{height:100%;display:grid;grid-template-columns:270px 1fr;grid-template-rows:auto 1fr}
+header{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:0 18px;height:48px;border-bottom:1px solid var(--rule);background:var(--paper)}
+.brand{font:800 18px var(--ui);font-stretch:125%;letter-spacing:.22em;text-transform:uppercase}
+.brand small{font:400 10px var(--mono);letter-spacing:.14em;color:var(--ink2);margin-left:14px;padding-left:14px;border-left:1px solid var(--rule);text-transform:uppercase}
+.sys{margin-left:auto;font:400 11px var(--mono);color:var(--ink2);letter-spacing:.08em;display:flex;gap:14px;align-items:center}
+.sys i{display:inline-block;width:7px;height:7px;background:var(--sea);margin-right:6px}
+.seg{display:flex;border:1px solid var(--rule)}
+.seg button{background:none;border:0;padding:6px 14px;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.seg button[aria-pressed=true]{background:var(--ink);color:#000}
+.ghost{background:none;border:1px solid var(--rule);padding:6px 12px;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink2)}
+.ghost:hover{border-color:var(--ink);color:var(--ink)}
+#menu{display:none}
+aside{border-right:1px solid var(--rule);overflow-y:auto;padding:0;display:flex;flex-direction:column;background:var(--paper)}
+aside section{padding:16px 16px 14px;border-bottom:1px solid var(--rule)}
+aside h3{font:500 10px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin-bottom:10px}
+aside textarea,aside input:not([type=range]){width:100%;background:#0d0e10;border:1px solid var(--rule);padding:7px 9px;margin-bottom:6px;resize:vertical;font:12px var(--mono)}
+aside input[type=range]{width:100%;accent-color:var(--grease)}
+.stat{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--rule);font:12px var(--mono);color:var(--ink2)}
+.stat:last-child{border:0}
+.stat b{font-weight:500;color:var(--ink)}
+#hist{display:flex;flex-direction:column}
+#hist button{text-align:left;background:none;border:0;padding:6px 8px;border-left:2px solid var(--rule);color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font:12px var(--mono)}
+#hist button:hover{background:var(--sheet);color:var(--ink)}
+main{display:flex;flex-direction:column;min-height:0;background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:48px 48px;background-position:-1px -1px;background-color:var(--paper)}
+#feed{flex:1;overflow-y:auto;padding:28px clamp(16px,4vw,56px);display:flex;flex-direction:column;gap:20px}
+.empty{margin:auto;max-width:560px;padding:32px;background:var(--paper);border:1px solid var(--rule)}
+.empty h1{font:800 34px/1.05 var(--ui);font-stretch:125%;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px}
+.empty p{color:var(--ink2);font-size:14px;margin-bottom:20px;max-width:46ch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{background:none;border:1px solid var(--rule);padding:6px 12px;font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.chips button:hover{border-color:var(--grease);color:var(--ink)}
+.ask{align-self:flex-end;max-width:min(640px,90%);background:var(--ink);color:#000;padding:10px 14px;white-space:pre-wrap;font:13px var(--mono)}
+.sheet{background:rgba(16,17,19,.96);border:1px solid var(--rule);padding:24px 28px;max-width:880px;width:100%;position:relative}
+.sheet:before,.sheet:after{content:'';position:absolute;width:12px;height:12px;border:2px solid var(--ink)}
+.sheet:before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.sheet:after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.sheet.alert{border-color:var(--grease)}.sheet.alert:before,.sheet.alert:after{border-color:var(--grease)}
+.sheet.err{border-color:var(--amber)}.sheet.err:before,.sheet.err:after{border-color:var(--amber)}
+.assess{font:400 16px/1.6 var(--ui);max-width:70ch}
+.sec{margin-top:24px}
+.sec h4{font:500 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--ink2);padding-bottom:6px;border-bottom:1px solid var(--rule);margin-bottom:10px}
+.ruler .scale{position:relative;height:34px;border-bottom:1px solid var(--ink2);background:repeating-linear-gradient(90deg,var(--ink2) 0 1px,transparent 1px 10%) bottom/100% 9px no-repeat,repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 2%) bottom/100% 5px no-repeat}
+.ruler .mark{position:absolute;bottom:-1px;width:3px;height:34px;background:var(--grease);transform:translateX(-1px)}
+.ruler .mark:before{content:'';position:absolute;top:-6px;left:-4px;border:5.5px solid transparent;border-top-color:var(--grease)}
+.ruler .thr{position:absolute;bottom:0;height:34px;border-left:1px dashed var(--amber)}
+.ruler .lbl{display:flex;justify-content:space-between;align-items:baseline;margin-top:8px;color:var(--ink2);font:12px var(--mono)}
+.ruler .lbl b{font:500 28px var(--mono);color:var(--ink)}
+.orders{border:1px solid var(--ink);padding:18px 18px 14px;position:relative;margin-top:14px;background:rgba(255,255,255,.02)}
+.orders .stamp{position:absolute;top:-8px;left:14px;background:var(--sheet);padding:0 8px;font:500 10px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--grease)}
+.orders h5{font:800 18px var(--ui);font-stretch:112%;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.alt{padding:10px 0;border-bottom:1px solid var(--rule)}
+.alt:last-child{border:0}
+.alt b{font-weight:600;font-size:14px}
+.tag{display:inline-block;font:500 10px var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:1px 6px;border:1px solid currentColor;margin-left:8px;vertical-align:1px}
+.LOW{color:var(--ok)}.MEDIUM,.MED{color:var(--amber)}.HIGH,.CRITICAL{color:var(--grease)}
+.steps{list-style:none;border-left:1px solid var(--ink2);margin-left:5px}
+.steps li{padding:6px 0 6px 18px;position:relative}
+.steps li:before{content:'';position:absolute;left:-5px;top:13px;width:9px;height:9px;background:var(--paper);border:1px solid var(--ink)}
+.steps li.required:before{background:var(--grease);border-color:var(--grease)}
+ul.plain{padding-left:18px}
+.note{margin-top:22px;padding-top:12px;border-top:1px solid var(--rule);font:12px var(--mono);color:var(--ink2)}
+.dissent{margin-top:18px;border:1px solid var(--grease);border-left-width:4px;padding:8px 14px;background:rgba(255,90,31,.07)}
+.dots span{display:inline-block;width:10px;height:10px;margin-right:6px;background:var(--grease);animation:p 1s steps(2) infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes p{50%{opacity:.15}}
+.drill{display:flex;gap:6px;flex-wrap:wrap;margin-top:20px}
+.drill button{font:11px var(--mono);background:none;border:1px solid var(--rule);padding:5px 10px;color:var(--ink2)}
+.drill button:hover{border-color:var(--grease);color:var(--ink)}
+.composer{border-top:1px solid var(--rule);background:var(--paper);padding:14px clamp(16px,4vw,56px) 14px}
+.row{display:flex;gap:0;align-items:stretch}
+#q{flex:1;resize:none;max-height:180px;min-height:48px;background:#0d0e10;border:1px solid var(--rule);border-right:0;padding:13px 14px;font:13px var(--mono)}
+#go{background:var(--ink);color:#000;border:0;padding:0 26px;font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase}
+#go:hover{background:var(--grease);color:#000}
+#go:disabled{opacity:.4;cursor:wait}
+.opts{display:flex;gap:16px;align-items:center;margin-top:10px;flex-wrap:wrap;color:var(--ink2);font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+.opts select{background:#0d0e10;border:1px solid var(--rule);padding:3px 8px;font:11px var(--mono);text-transform:uppercase}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.opts input{accent-color:var(--grease)}
+details.src{margin-top:10px}
+details.src summary{cursor:pointer;color:var(--ink2);font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase}
+details.src textarea{width:100%;height:90px;margin-top:8px;background:#0d0e10;border:1px solid var(--rule);padding:9px;font:12px var(--mono)}
+.warn{color:var(--grease);font-weight:600}
+@media (max-width:800px){
+  .app{grid-template-columns:1fr}
+  #menu{display:inline-block}
+  aside{position:fixed;z-index:10;top:48px;bottom:0;left:0;width:min(310px,88vw);transform:translateX(-102%);transition:transform .2s}
+  aside.open{transform:none;border-right-color:var(--ink)}
+  .brand small,.sys{display:none}
+  .sheet{padding:18px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px;padding-top:12px;border-top:1px solid var(--rule)}
+.acts button{font:11px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--rule);padding:4px 9px;color:var(--ink2)}
+.acts button:hover{border-color:var(--grease);color:var(--ink)}
+.acts:before{content:'Challenge this';font:10px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);align-self:center;margin-right:6px}
+.lh{font:800 15px var(--ui);font-stretch:112%;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;color:var(--grease)}
+.mx{overflow-x:auto}.mx table{border-collapse:collapse;width:100%;font-size:13px}
+.mx th,.mx td{border-bottom:1px solid var(--rule);padding:8px;text-align:left;vertical-align:top}
+.mx th{font:500 11px var(--mono);color:var(--ink2)}
+.mx input{width:48px;background:#0d0e10;border:1px solid var(--rule);padding:2px 4px;font:12px var(--mono);margin-top:4px}
+.mx .tot{font:500 20px var(--mono);color:var(--grease)}.mut{color:var(--ink2);font-size:12px;font-weight:400}
+.dice{display:flex;gap:14px;align-items:center;margin-bottom:14px;font:12px var(--mono);color:var(--ink2)}
+.dice b{font:500 26px var(--mono);color:var(--ink);margin-left:6px}
+#wg{margin-bottom:10px;border:1px solid var(--rule);padding:10px}
+#wg .wgh{display:flex;gap:12px;align-items:center;font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);margin-bottom:6px}
+#wg .wgh span{margin-left:auto;color:var(--grease)}
+#wstate{width:100%;background:#0d0e10;border:1px solid var(--rule);padding:8px;font:12px var(--mono);resize:vertical}
+/* splash */
+#splash{position:fixed;inset:0;z-index:100;background:var(--paper);display:flex;flex-direction:column;justify-content:flex-end;padding:40px clamp(20px,5vw,56px);font:12px/1.9 var(--mono);transition:opacity .6s}
+#splash.out{opacity:0;pointer-events:none}
+#splash:before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:48px 48px;opacity:.35;pointer-events:none}
+.sp-mark{position:absolute;top:36px;right:clamp(20px,5vw,56px);text-align:right;color:var(--ink2);font-size:10px;letter-spacing:.2em;line-height:2.1;text-transform:uppercase}
+.sp-mark b{display:block;color:var(--ink);font:800 20px var(--ui);font-stretch:125%;letter-spacing:.3em}
+#bl{position:relative;width:100%;max-width:min(860px,100%);max-height:calc(100vh - 150px);overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;-webkit-mask-image:linear-gradient(transparent,#000 70px);mask-image:linear-gradient(transparent,#000 70px)}
+.bl{display:flex;gap:12px;white-space:nowrap;color:var(--ink2);animation:in .18s both}
+@keyframes in{from{opacity:0;transform:translateY(3px)}}
+.bl .t{width:64px;flex:none;color:#4a4d54;font-size:10px}
+.bl .k{width:150px;flex:none}
+.bl .v{flex:1;overflow:hidden;text-overflow:ellipsis}
+.bl.ok .v{color:var(--sea)}.bl.warn .v{color:var(--amber)}.bl.err .v{color:var(--grease)}.bl.hot .v,.bl.hot .k{color:var(--ink)}
+#idl{display:none;position:relative;gap:12px;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--rule);max-width:860px}
+#idl.show{display:flex}
+#idl span{color:var(--amber);white-space:nowrap}
+#ident{flex:1;min-width:0;background:none;border:0;outline:0;font:12px var(--mono);letter-spacing:.06em;caret-color:var(--grease)}
+#idl i{font:normal 10px var(--mono);color:#4a4d54;letter-spacing:.14em}
+.cur{display:inline-block;width:7px;height:12px;background:var(--grease);vertical-align:-1px;animation:blk 1s steps(1) infinite}
+@keyframes blk{50%{opacity:0}}
+#skip{position:absolute;top:36px;left:clamp(20px,5vw,56px);background:none;border:0;color:#4a4d54;font:10px var(--mono);letter-spacing:.2em;text-transform:uppercase}
+#skip:hover{color:var(--ink)}
+@media (max-width:600px){.bl .k{width:96px}.bl .t{display:none}.sp-mark b{font-size:15px}}
+</style>
+</head>
+<body>
+<div id="splash">
+  <button id="skip">Skip</button>
+  <div class="sp-mark"><b>Oracle</b><span id="lic">AT-ORC-…</span><br>Altura Intelligence Systems</div>
+  <div id="bl"></div>
+  <div id="idl"><span>OPERATOR_IDENT ›</span><input id="ident" placeholder="name · designation · unit" autocomplete="off" spellcheck="false" maxlength="80" aria-label="Operator identification"><i>ENTER ↵</i></div>
+</div>
+<div class="app">
+<header>
+  <button class="ghost" id="menu" aria-label="Toggle sidebar">Menu</button>
+  <div class="brand">Oracle<small>Altura Intelligence Systems</small></div>
+  <div class="sys"><span><i></i>Nominal</span><span id="clk">--:--:--Z</span></div>
+  <div class="seg" style="margin-left:0" role="group" aria-label="Mode">
+    <button id="m-analysis" aria-pressed="true">Analysis</button>
+    <button id="m-planning" aria-pressed="false">Planning</button>
+    <button id="m-wargame" aria-pressed="false">Wargame</button>
+  </div>
+  <button class="ghost" id="exp">Export</button>
+  <button class="ghost" id="new">New session</button>
+</header>
+
+<aside id="side">
+  <section>
+    <h3>Situation context</h3>
+    <textarea id="ctx" rows="5" placeholder="Operating environment, actors, current situation. Sent with every query."></textarea>
+    <input id="op-role" placeholder="Your role">
+    <input id="op-org" placeholder="Organisation">
+    <input id="op-jur" placeholder="Jurisdiction">
+  </section>
+  <section>
+    <h3>Warn when confidence is below <span id="tv">40</span>%</h3>
+    <input type="range" id="thr" min="0" max="90" value="40">
+  </section>
+  <section>
+    <h3>Session</h3>
+    <div class="stat"><span>Queries</span><b id="s-q">0</b></div>
+    <div class="stat"><span id="s-cl">Avg confidence</span><b id="s-c">–</b></div>
+    <div class="stat"><span>Dissent flags</span><b id="s-d">0</b></div>
+    <div class="stat"><span>Alerts</span><b id="s-a">0</b></div>
+  </section>
+  <section>
+    <h3>History</h3>
+    <div id="hist"><span style="color:var(--ink2)">No queries yet</span></div>
+  </section>
+  <section>
+    <h3>Connection</h3>
+    <input id="proxy" placeholder="Proxy URL" spellcheck="false">
+    <div class="stat"><span>Status</span><b id="net">ready</b></div>
+  </section>
+</aside>
+
+<main>
+  <div id="feed">
+    <div class="empty" id="empty">
+      <h1>Awaiting tasking</h1>
+      <p>Describe a situation. Oracle returns an assessment, a recommended course of action, the alternatives it rejected, and what it still doesn't know.</p>
+      <div class="chips" id="chips">
+        <button>Course of action analysis</button><button>Risk assessment</button>
+        <button>Intelligence gaps</button><button>Strategic decision</button><button>Tactical situation</button>
+      </div>
+    </div>
+  </div>
+  <div class="composer">
+    <div id="wg" hidden><div class="wgh"><b>Scenario state</b><span id="wturn">Turn 1</span><button class="ghost" id="wreset">Reset</button></div><textarea id="wstate" rows="4" placeholder="Forces, positions, supplies, diplomatic status. Oracle rewrites this after each turn. You can edit it."></textarea></div>
+    <div class="row">
+      <textarea id="q" rows="1" placeholder="Describe the situation or decision. Ctrl+Enter to send."></textarea>
+      <button id="go">Analyse</button>
+    </div>
+    <div class="opts">
+      <select id="domain" aria-label="Domain"><option>tactical</option><option>intelligence</option><option>strategic</option><option>security</option><option>political</option><option>legal</option><option>operational</option></select>
+      <select id="threat" aria-label="Threat level"><option value="LOW">low threat</option><option value="MEDIUM" selected>medium threat</option><option value="HIGH">high threat</option><option value="CRITICAL">critical</option></select>
+      <select id="lens" aria-label="Analytic lens"><option value="standard">standard analysis</option><option value="redteam">red team</option><option value="premortem">pre-mortem</option><option value="matrix">decision matrix</option><option value="ladder">escalation ladder</option><option value="assumptions">assumption check</option><option value="timeline">event timeline</option></select>
+      <label><input type="checkbox" id="tp"> Time pressure</label>
+      <span id="qc"></span>
+    </div>
+    <details class="src"><summary>Attach source material (used for the next query only)</summary><div class="opts" style="margin:8px 0 0">Reliability <select id="rel"><option>A</option><option>B</option><option selected>C</option><option>D</option><option>E</option><option>F</option></select> Credibility <select id="cred"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option></select></div><textarea id="src" placeholder="Paste a report, signal, or document."></textarea></details>
+  </div>
+</main>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const BAKED_PROXY = 'https://oracle.graggle9901.workers.dev';
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v === null ? d : v; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, v); }catch(e){} }
+};
+const S = { mode:'analysis', busy:false, log:[], confs:[], dissent:0, alerts:0 };
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lvl = x => String(x || 'LOW').toUpperCase();
+
+setInterval(()=>{$('clk').textContent=new Date().toISOString().slice(11,19)+'Z'},1000);
+// ── settings ──
+$('proxy').value = store.get('oracle_proxy', BAKED_PROXY);
+$('proxy').onchange = e => store.set('oracle_proxy', e.target.value.trim());
+['ctx','op-role','op-org','op-jur'].forEach(id => { $(id).value = store.get('oracle_'+id, ''); $(id).oninput = e => store.set('oracle_'+id, e.target.value); });
+$('thr').value = store.get('oracle_thr', 40); $('tv').textContent = $('thr').value;
+$('thr').oninput = e => { $('tv').textContent = e.target.value; store.set('oracle_thr', e.target.value); };
+$('menu').onclick = () => $('side').classList.toggle('open');
+
+function setMode(m){
+  S.mode = m;
+  ['analysis','planning','wargame'].forEach(x => $('m-' + x).setAttribute('aria-pressed', x === m));
+  $('go').textContent = m === 'planning' ? 'Plan' : m === 'wargame' ? 'Resolve turn' : 'Analyse';
+  $('s-cl').textContent = m === 'planning' ? 'Avg feasibility' : 'Avg confidence';
+  $('wg').hidden = m !== 'wargame'; $('lens').disabled = m !== 'analysis';
+  $('q').placeholder = m === 'wargame' ? 'Issue your orders for this turn.' : 'Describe the situation or decision. Ctrl+Enter to send.';
+}
+$('m-analysis').onclick = () => setMode('analysis');
+$('m-planning').onclick = () => setMode('planning');
+$('chips').onclick = e => { if (e.target.tagName === 'BUTTON'){ $('q').value = e.target.textContent + ': '; $('q').focus(); } };
+$('q').addEventListener('input', e => { e.target.style.height = 'auto'; e.target.style.height = Math.min(e.target.scrollHeight, 180) + 'px'; $('qc').textContent = e.target.value.length ? e.target.value.length + ' characters' : ''; });
+$('q').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)){ e.preventDefault(); run(); } });
+$('go').onclick = () => run();
+$('new').onclick = () => { if (S.log.length && !confirm('Clear this session?')) return; S.log = []; S.confs = []; S.dissent = 0; S.alerts = 0; $('feed').innerHTML = ''; $('feed').appendChild($('empty')); $('empty').style.display = ''; hist(); stats(); save(); };
+
+// ── rendering ──
+function ruler(v, label){
+  const t = +$('thr').value;
+  return `<div class="ruler"><div class="scale"><div class="thr" style="left:${t}%" title="Warning threshold"></div><div class="mark" style="left:${Math.max(0,Math.min(100,v))}%"></div></div>
+  <div class="lbl"><span>${esc(label)}</span><b>${Math.round(v)}%</b></div></div>`;
+}
+const list = a => a && a.length ? `<ul class="plain">${a.map(x => `<li>${esc(typeof x === 'string' ? x : x.text || JSON.stringify(x))}</li>`).join('')}</ul>` : '';
+const sec = (t, h) => h ? `<div class="sec"><h4>${t}</h4>${h}</div>` : '';
+
+function renderAnalysis(r){
+  const c = r.confidence ?? 0, low = c < +$('thr').value;
+  const coa = r.recommended_coa;
+  return `<div class="assess">${esc(r.assessment)}</div>
+  ${sec('Confidence', ruler(c, r.confidence_basis || 'Dashed line marks your warning threshold') + (low ? '<div class="warn">Below your threshold. Treat with caution.</div>' : ''))}
+  ${coa ? sec('Recommended course of action', `<div class="orders"><span class="stamp">Recommended</span><h5>${esc(coa.title)}</h5><div>${esc(coa.description)}</div></div>`) : ''}
+  ${sec('Alternatives considered', (r.alternative_coas || []).map(a => `<div class="alt"><b>${esc(a.title)}</b><span class="tag ${lvl(a.risk)}">${lvl(a.risk)} risk</span><div>${esc(a.description)}</div></div>`).join(''))}
+  ${sec('Risks', (r.risks || []).map(x => `<div class="alt"><b>${esc(x.label)}</b><span class="tag ${lvl(x.level)}">${lvl(x.level)}</span><div>${esc(x.detail)}</div></div>`).join(''))}
+  ${sec('What we do not know', list(r.intel_gaps))}
+  ${sec('Authority chain', r.authority_chain?.length ? `<ol class="steps">${r.authority_chain.map(s => `<li class="${esc(s.status)}"><b>${esc(s.step)}</b> ${s.note ? '· ' + esc(s.note) : ''}</li>`).join('')}</ol>` : '')}
+  ${r.dissent ? `<div class="dissent"><b>Dissent.</b> ${esc(r.dissent_reason || 'Oracle flags disagreement with the premise.')}</div>` : ''}
+  ${r.oracle_note ? `<div class="note">${esc(r.oracle_note)}</div>` : ''}`;
+}
+function renderPlan(r){
+  const f = r.feasibility ?? 0;
+  return `<div class="assess">${esc(r.objective)}</div>
+  ${sec('Feasibility', ruler(f, r.feasibility_basis || ''))}
+  ${sec('Phases', r.phases?.length ? `<ol class="steps">${r.phases.map(p => `<li><b>${esc(p.name)}</b> ${p.window ? '· ' + esc(p.window) : ''}${p.status ? `<span class="tag">${esc(p.status)}</span>` : ''}<div>${esc(p.description)}</div>${list(p.tasks)}</li>`).join('')}</ol>` : '')}
+  ${sec('Resources', (r.resources || []).map(x => `<div class="alt"><b>${esc(x.item)}</b>${x.category ? `<span class="tag">${esc(x.category)}</span>` : ''}<div>${esc(x.note)}</div></div>`).join(''))}
+  ${sec('Dependencies', list(r.dependencies))}
+  ${sec('Contingencies', (r.contingencies || []).map(x => `<div class="alt"><b>If</b> ${esc(x.trigger)}<br><b>Then</b> ${esc(x.response)}</div>`).join(''))}
+  ${sec('Success criteria', list(r.success_criteria))}
+  ${r.oracle_note ? `<div class="note">${esc(r.oracle_note)}</div>` : ''}`;
+}
+function drill(r){
+  if (S.mode === 'planning') return '';
+  const t = []; if (r.risks?.[0]) t.push('Expand on the ' + r.risks[0].label + ' risk');
+  if (r.alternative_coas?.[0]) t.push('Why not ' + r.alternative_coas[0].title + '?');
+  if (r.intel_gaps?.[0]) t.push('How do we close the first intelligence gap?');
+  return t.length ? `<div class="drill">${t.map(x => `<button data-q="${esc(x)}">${esc(x)}</button>`).join('')}</div>` : '';
+}
+function add(html, cls){
+  $('empty').style.display = 'none';
+  const d = document.createElement('div'); d.className = cls; d.innerHTML = html;
+  $('feed').appendChild(d); $('feed').scrollTop = $('feed').scrollHeight; return d;
+}
+$('feed').addEventListener('click', e => { const q = e.target.dataset?.q; if (q){ $('q').value = q; run(); } });
+
+function stats(){
+  $('s-q').textContent = S.log.length;
+  $('s-c').textContent = S.confs.length ? Math.round(S.confs.reduce((a, b) => a + b, 0) / S.confs.length) + '%' : '–';
+  $('s-d').textContent = S.dissent; $('s-a').textContent = S.alerts;
+}
+function hist(){
+  $('hist').innerHTML = S.log.length ? '' : '<span style="color:var(--ink2)">No queries yet</span>';
+  S.log.slice().reverse().forEach(h => {
+    const b = document.createElement('button'); b.textContent = h.q; b.title = h.q;
+    b.style.borderLeftColor = h.conf === null ? 'var(--rule)' : h.conf < +$('thr').value ? 'var(--grease)' : 'var(--ok)';
+    b.onclick = () => { $('q').value = h.q; $('q').focus(); };
+    $('hist').appendChild(b);
+  });
+}
+
+// ── query ──
+async function run(){
+  const q = $('q').value.trim();
+  if (!q || S.busy) return;
+  const plan = S.mode === 'planning', war = S.mode === 'wargame', lens = S.mode === 'analysis' ? $('lens').value : 'standard', d6 = () => 1 + Math.floor(Math.random()*6), dice = war ? [d6()+d6(), d6()+d6()] : null;
+  S.busy = true; $('go').disabled = true; $('net').textContent = 'analysing';
+  add(esc(q), 'ask');
+  $('q').value = ''; $('q').style.height = 'auto'; $('qc').textContent = '';
+  const wait = add('<div class="dots"><span></span><span></span><span></span></div>', 'sheet');
+  const op = ['op-role','op-org','op-jur'].map(i => $(i).value.trim());
+  const content = [
+    $('ctx').value.trim() ? 'CONTEXT:\n' + $('ctx').value.trim() + '\n\n' : '',
+    op.some(Boolean) ? `OPERATOR: ${op[0] || 'unspecified'} | ${op[1] || 'unspecified'} | ${op[2] || 'unspecified'}\n\n` : '',
+    $('src').value.trim() ? 'SOURCE MATERIAL:\n' + $('src').value.trim() + '\nSOURCE GRADING: reliability ' + $('rel').value + ', credibility ' + $('cred').value + ' (Admiralty scale). Weight your confidence accordingly.\n\n' : '',
+    queryBlock(q, plan, war, dice, lens),
+    $('tp').checked ? '\nTIME PRESSURE MODE: Return assessment, recommended_coa, and oracle_note only. Omit all other fields.' : ''
+  ].join('');
+  $('src').value = '';
+  const prior = S.log.slice(-4).flatMap(h => [
+    { role:'user', content:h.q },
+    { role:'assistant', content: h.plan ? `{"objective":"[prior plan]","feasibility":${h.conf}}` : `{"assessment":"[prior response]","confidence":${h.conf}}` }
+  ]);
+  const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 55000);
+  try{
+    const res = await fetch($('proxy').value.trim() || BAKED_PROXY, {
+      method:'POST', headers:{'Content-Type':'application/json'}, signal: ctl.signal,
+      body: JSON.stringify({ mode: plan ? 'planning' : 'analysis', messages:[...prior, { role:'user', content }] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+    const text = (data.choices?.[0]?.message?.content || '').trim();
+    if (!text) throw new Error('Empty response from engine.');
+    wait.remove();
+    const a = text.indexOf('{'), b = text.lastIndexOf('}');
+    let parsed = null; try{ if (a > -1 && b > a) parsed = JSON.parse(text.slice(a, b + 1)); }catch(e){}
+    const alertSrc = text.includes('ORACLE SYSTEM ALERT') ? text : (parsed?.assessment || '').includes('ORACLE SYSTEM ALERT') ? parsed.assessment : null;
+    if (alertSrc){
+      const lines = alertSrc.slice(alertSrc.indexOf('ORACLE SYSTEM ALERT')).split('\n').map(s => s.trim()).filter(Boolean);
+      S.alerts++; S.log.push({ q, conf:0, plan });
+      add(`<h4 class="warn">${esc(lines[0])}</h4>${lines.slice(1).map(l => `<p class="assess">${esc(l)}</p>`).join('')}`, 'sheet alert');
+    } else {
+      if (!parsed) throw new Error('No structured data in response: ' + text.slice(0, 120));
+      const conf = plan ? parsed.feasibility ?? 0 : (lens !== 'standard' || war) ? null : parsed.confidence ?? 0;
+      if (parsed.dissent) S.dissent++;
+      if (conf !== null) S.confs.push(conf); S.log.push({ q, conf, plan, lens, war, dice, turn: WG.turn, r:parsed }); if (war) wgAdvance(parsed);
+      const el = add(renderEntry(S.log[S.log.length - 1]), 'sheet'); mx(el); save();
+      el.scrollIntoView({ block:'start', behavior:'smooth' });
+    }
+  }catch(err){
+    wait.remove();
+    add(`<h4 class="warn">Request failed</h4><div class="assess">${esc(err.name === 'AbortError' ? 'The engine did not respond within 55 seconds. Resubmit, or try again shortly.' : err.message)}</div>`, 'sheet err');
+  }finally{
+    clearTimeout(timer); S.busy = false; $('go').disabled = false; $('net').textContent = 'ready'; hist(); stats();
+  }
+}
+
+// ── analytic lenses, wargame, persistence ──
+const LENS = {
+  standard:{label:'Standard'},
+  redteam:{label:'Red team', ask:"Act as the adversary's planning staff. Show how they would counter the prior recommended course of action.", schema:'{"summary":str,"adversary_goals":[str],"counters":[{"move":str,"effect":str,"likelihood":"LOW|MEDIUM|HIGH"}],"our_blind_spots":[str],"suggested_adjustment":str}'},
+  premortem:{label:'Pre-mortem', ask:'Assume the prior recommended course of action failed badly. Explain how.', schema:'{"summary":str,"failure_scenarios":[{"scenario":str,"cause":str,"warning_signs":[str],"mitigation":str}],"most_likely_failure":str}'},
+  matrix:{label:'Decision matrix', ask:'Score the recommended course of action and each alternative against 4 to 6 criteria that matter here.', schema:'{"criteria":[{"name":str,"weight":1-5}],"options":[{"name":str,"scores":{"<criterion name>":1-10},"rationale":str}],"note":str}'},
+  ladder:{label:'Escalation ladder', ask:'Lay out the escalation rungs the situation could climb, with triggers, likely responses and off-ramps.', schema:'{"summary":str,"rungs":[{"level":str,"trigger":str,"likely_response":str,"off_ramp":str}]}'},
+  assumptions:{label:'Assumption check', ask:'List every assumption the prior analysis depends on, and how to test each.', schema:'{"assumptions":[{"text":str,"confidence":0-100,"if_wrong":str,"how_to_test":str}]}'},
+  timeline:{label:'Event timeline', ask:'Sequence the likely events, with triggers and dependencies.', schema:'{"summary":str,"events":[{"when":str,"what":str,"trigger_or_dependency":str}]}'}
+};
+const WG = { turn: +store.get('oracle_turn', 1) || 1 };
+$('wstate').value = store.get('oracle_wstate', '');
+const wgLabel = () => { $('wturn').textContent = 'Turn ' + WG.turn; };
+wgLabel();
+$('wstate').oninput = e => store.set('oracle_wstate', e.target.value);
+$('wreset').onclick = () => { if (confirm('Reset scenario state and turn counter?')){ WG.turn = 1; $('wstate').value = ''; store.set('oracle_turn', 1); store.set('oracle_wstate', ''); wgLabel(); } };
+function wgAdvance(r){ if (typeof r.new_state === 'string'){ $('wstate').value = r.new_state; store.set('oracle_wstate', r.new_state); } WG.turn++; store.set('oracle_turn', WG.turn); wgLabel(); }
+$('m-wargame').onclick = () => setMode('wargame');
+
+function queryBlock(q, plan, war, dice, lens){
+  if (war) return `WARGAME TURN ${WG.turn}\nSCENARIO STATE:\n${$('wstate').value.trim() || '(none given: invent a plausible state and report it in new_state)'}\nFRIENDLY ORDERS: ${q}\nDICE (binding, rolled outside the model, do not reinterpret): friendly ${dice[0]}, adversary ${dice[1]} (2d6, higher is better, equal is stalemate)\nAdjudicate fairly using the dice. This overrides the standard response schema. Respond with ONLY a JSON object: {"narrative":str,"outcome":"FRIENDLY_ADVANTAGE|CONTESTED|ADVERSARY_ADVANTAGE","losses":{"friendly":str,"adversary":str},"new_state":str,"adversary_next":str,"options":[str]}`;
+  const base = `${plan ? 'PLANNING REQUEST' : 'QUERY'}: ${q}\nDOMAIN: ${$('domain').value}\nTHREAT LEVEL: ${$('threat').value}`;
+  if (plan || lens === 'standard') return base;
+  const p = [...S.log].reverse().find(x => x.r && x.r.recommended_coa);
+  const prior = p ? 'PRIOR ANALYSIS (subject of this request): ' + JSON.stringify({ assessment:p.r.assessment, recommended_coa:p.r.recommended_coa, alternatives:(p.r.alternative_coas || []).map(a => a.title) }) + '\n\n' : '';
+  return prior + base + '\nLENS: ' + LENS[lens].ask + '\nOUTPUT OVERRIDE: Ignore the standard response schema. Respond with ONLY a JSON object shaped like: ' + LENS[lens].schema;
+}
+function gen(v){
+  if (Array.isArray(v)) return v.every(x => typeof x !== 'object') ? list(v) : v.map(x => `<div class="alt">${gen(x)}</div>`).join('');
+  if (v && typeof v === 'object') return Object.entries(v).map(([k, x]) => (x === null || typeof x !== 'object') ? `<div><b>${esc(k.replace(/_/g, ' '))}:</b> ${esc(x)}</div>` : `<div class="sec"><h4>${esc(k.replace(/_/g, ' '))}</h4>${gen(x)}</div>`).join('');
+  return esc(v);
+}
+function renderMatrix(r){
+  const cr = r.criteria || [], op = r.options || [], n = (o, c) => +o.scores?.[c.name] || 0;
+  return `<div class="mx"><table><tr><th>Option</th>${cr.map(c => `<th>${esc(c.name)}<br>weight <input type="number" min="0" max="5" value="${+c.weight || 1}" data-w aria-label="Weight for ${esc(c.name)}"></th>`).join('')}<th>Score</th></tr>${op.map(o => `<tr><td><b>${esc(o.name)}</b><div class="mut">${esc(o.rationale)}</div></td>${cr.map(c => `<td data-s="${n(o, c)}">${n(o, c)}</td>`).join('')}<td class="tot"></td></tr>`).join('')}</table></div><div class="mut">Change a weight and the scores recalculate.</div>${r.note ? `<div class="note">${esc(r.note)}</div>` : ''}`;
+}
+function mx(root){
+  root.querySelectorAll('.mx').forEach(t => {
+    const w = [...t.querySelectorAll('[data-w]')].map(i => +i.value || 0), sw = w.reduce((a, b) => a + b, 0) || 1;
+    t.querySelectorAll('tr').forEach(tr => { const c = [...tr.querySelectorAll('[data-s]')]; if (c.length) tr.querySelector('.tot').textContent = Math.round(c.reduce((a, x, i) => a + x.dataset.s * w[i], 0) / sw * 10); });
+  });
+}
+function renderWar(h){
+  const r = h.r, d = h.dice || [0, 0], cls = { FRIENDLY_ADVANTAGE:'LOW', CONTESTED:'MEDIUM', ADVERSARY_ADVANTAGE:'HIGH' }[r.outcome] || '';
+  return `<div class="dice"><span>Turn ${h.turn}</span><span>Friendly<b>${d[0]}</b></span><span>Adversary<b>${d[1]}</b></span><span class="tag ${cls}">${esc(String(r.outcome || '').replace(/_/g, ' '))}</span></div>
+  <div class="assess">${esc(r.narrative)}</div>
+  ${sec('Losses', r.losses ? `<div><b>Friendly:</b> ${esc(r.losses.friendly)}</div><div><b>Adversary:</b> ${esc(r.losses.adversary)}</div>` : '')}
+  ${sec('Adversary intent', esc(r.adversary_next))}
+  ${sec('Options for next turn', r.options?.length ? `<div class="drill" style="margin-top:0">${r.options.map(o => `<button data-q="${esc(o)}">${esc(o)}</button>`).join('')}</div>` : '')}
+  <div class="note">Dice were rolled by the page, not the model. The scenario state box has been updated; edit it before the next turn if you disagree.</div>`;
+}
+const acts = full => `<div class="acts">${full ? Object.keys(LENS).filter(k => k !== 'standard').map(k => `<button data-lens="${k}">${LENS[k].label}</button>`).join('') : ''}<button data-copy="1">Copy</button></div>`;
+function renderEntry(h){
+  if (h.war) return renderWar(h);
+  if (h.lens && h.lens !== 'standard') return `<div class="lh">${esc(LENS[h.lens]?.label)}</div>` + (h.lens === 'matrix' ? renderMatrix(h.r) : gen(h.r)) + acts(false);
+  if (h.plan) return renderPlan(h.r);
+  return renderAnalysis(h.r) + drill(h.r) + acts(true);
+}
+$('feed').addEventListener('click', e => {
+  const t = e.target;
+  if (t.dataset.lens){ setMode('analysis'); $('lens').value = t.dataset.lens; $('q').value = 'Apply this lens to the most recent recommended course of action.'; run(); }
+  if (t.dataset.copy){ try{ navigator.clipboard.writeText(t.closest('.sheet').innerText); t.textContent = 'Copied'; }catch(err){} }
+});
+$('feed').addEventListener('input', e => { if (e.target.matches('[data-w]')) mx(e.target.closest('.sheet')); });
+function save(){ store.set('oracle_log', JSON.stringify(S.log.filter(x => x.r).slice(-30))); }
+(function restore(){
+  let log = []; try{ log = JSON.parse(store.get('oracle_log', '[]')) || []; }catch(e){}
+  if (!log.length) return;
+  S.log = log; S.confs = log.filter(x => typeof x.conf === 'number').map(x => x.conf); S.dissent = log.filter(x => x.r?.dissent).length;
+  log.forEach(x => { add(esc(x.q), 'ask'); mx(add(renderEntry(x), 'sheet')); });
+  hist(); stats(); $('feed').scrollTop = $('feed').scrollHeight;
+})();
+
+// ── export ──
+$('exp').onclick = () => {
+  if (!S.log.length) return;
+  const md = ['# Oracle session', new Date().toISOString(), ''];
+  S.log.forEach((h, i) => {
+    md.push(`## ${i + 1}. ${h.q}`, `${h.plan ? 'Feasibility' : 'Confidence'}: ${h.conf}%`, '');
+    const r = h.r; if (!r) return;
+    if (r.assessment) md.push(r.assessment, '');
+    if (r.objective) md.push(r.objective, '');
+    if (r.recommended_coa) md.push(`**Recommended:** ${r.recommended_coa.title}. ${r.recommended_coa.description}`, '');
+    (r.alternative_coas || []).forEach(a => md.push(`- Alternative (${a.risk}): ${a.title}. ${a.description}`));
+    (r.risks || []).forEach(x => md.push(`- Risk (${x.level}): ${x.label}. ${x.detail}`));
+    (r.intel_gaps || []).forEach(x => md.push(`- Gap: ${x}`));
+    (r.phases || []).forEach(p => md.push(`- Phase: ${p.name} (${p.window || ''}). ${p.description}`));
+    md.push('');
+  });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([md.join('\n')], { type:'text/markdown' }));
+  a.download = 'oracle-session.md'; a.click(); URL.revokeObjectURL(a.href);
+};
+// ── splash / boot ──
+(function(){
+  const sp = $('splash'), bl = $('bl'), t0 = Date.now();
+  const calm = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const wait = ms => new Promise(r => setTimeout(r, calm ? Math.min(ms, 40) : ms));
+  const ts = () => '+' + ((Date.now() - t0) / 1000).toFixed(3) + 's';
+  const hex = n => Array.from({length:n}, () => Math.floor(Math.random()*65536).toString(16).padStart(4,'0')).join('-');
+  let done = false;
+  function line(k, v, cls){
+    const e = document.createElement('div'); e.className = 'bl ' + (cls || '');
+    e.innerHTML = `<span class="t">${ts()}</span><span class="k">${esc(k)}</span><span class="v">${esc(v)}</span>`;
+    bl.appendChild(e); while (bl.children.length > 40) bl.firstChild.remove(); return e;
+  }
+  function set(e, v, cls){ e.className = 'bl ' + (cls || ''); e.querySelector('.v').textContent = v; }
+  function finish(){
+    if (done) return; done = true; sp.classList.add('out');
+    setTimeout(() => { sp.remove(); $('q').focus(); }, 650);
+  }
+  $('skip').onclick = finish;
+  addEventListener('keydown', e => { if (e.key === 'Escape') finish(); });
+  async function boot(){
+    const lic = 'AT-ORC-' + hex(2).toUpperCase(); $('lic').textContent = lic;
+    let host = 'unset'; try{ host = new URL($('proxy').value).host; }catch(e){}
+    for (const [k, v, c] of [['KERNEL','oracle-core 3.0 · integrity verified','ok'],['MODULES','analysis · planning · export','ok'],['LICENCE', lic + ' · active','ok'],['CLOCK','UTC sync ' + new Date().toISOString().slice(0,19) + 'Z','ok']]){
+      line(k, v, c); await wait(90);
+    }
+    const net = line('ALTURA_NET','contacting alta-dc-slc-01.altura.int…','');
+    await wait(1400 + Math.random()*900);
+    set(net, 'alta-dc-slc-01.altura.int · ' + (18 + Math.floor(Math.random()*30)) + 'ms · OK', 'ok');
+    for (const dc of [['alta-dc-den-02','Denver'],['alta-dc-pdx-03','Portland']]){
+      const e = line('DC_SYNC', dc[0] + '.altura.int · ' + dc[1] + ' · syncing…', '');
+      await wait(140 + Math.random()*220);
+      set(e, dc[0] + '.altura.int · ' + dc[1] + ' · ' + (40 + Math.floor(Math.random()*90)) + 'ms · OK', 'ok');
+    }
+    const eng = line('ANALYSIS_ENGINE','proxy ' + host + ' · handshake…','');
+    await wait(500 + Math.random()*300); set(eng, 'proxy ' + host + ' · configured', host === 'unset' ? 'warn' : 'ok');
+    const sk = line('SESSION_KEY','generating…',''); await wait(380);
+    set(sk, hex(4) + ' · generated', 'ok'); await wait(100);
+    line('ENCRYPTION','AES-256 · key exchange complete','ok'); await wait(180);
+    line('OPERATOR_AUTH','awaiting operator identification','warn'); await wait(240);
+    $('idl').classList.add('show');
+    $('ident').value = store.get('oracle_ident', ''); $('ident').focus();
+  }
+  async function verify(raw){
+    store.set('oracle_ident', raw); $('idl').classList.remove('show');
+    const [name, desig, unit] = raw.split(/\s*[·|,]\s*/);
+    if (desig && !$('op-role').value) { $('op-role').value = desig; store.set('oracle_op-role', desig); }
+    if (unit && !$('op-org').value) { $('op-org').value = unit; store.set('oracle_op-org', unit); }
+    line('OPERATOR_IDENT', raw, 'hot');
+    const ic = line('IDENT_CHECK','contacting alta-ident-01.altura.int…',''); await wait(700 + Math.random()*500);
+    set(ic, 'operator recognised · clearance verified', 'ok'); await wait(150);
+    const pf = line('PROFILE','loading operator profile…',''); await wait(450); set(pf, 'profile loaded', 'ok'); await wait(150);
+    line('STATUS','ORACLE READY · OPERATOR ' + name.toUpperCase(), 'ok hot'); await wait(1000);
+    finish();
+  }
+  $('ident').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.value.trim()) verify(e.target.value.trim()); });
+  boot();
+})();
+</script>
+</body>
+</html>
